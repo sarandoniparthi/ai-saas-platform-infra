@@ -1,0 +1,71 @@
+# Infra Interview Notes
+
+## What I Built
+
+AWS infrastructure foundation for a production-style AI SaaS platform using Terraform, including networking, Kubernetes, container registry, PostgreSQL, Cognito authentication, security groups, and IAM/OIDC roles.
+
+## Why It Exists
+
+The infrastructure layer creates stable cloud primitives before application deployment begins. It separates cloud ownership from application code and makes changes reviewable.
+
+## How It Works
+
+Terraform modules define reusable infrastructure. Environments such as dev and prod compose those modules with environment-specific values. Remote state stores Terraform state in S3, and DynamoDB locking prevents concurrent applies. GitHub Actions runs format, validation, plan, and protected apply workflows by assuming IAM roles through OIDC. PostgreSQL is placed in private subnets and only allows traffic on port 5432 from the EKS cluster security group in the dev scaffold. Cognito provides managed authentication through a User Pool and app client.
+
+EKS Blueprints Addons can be used after the base cluster exists to install standard EKS platform add-ons such as AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets, ExternalDNS, and cert-manager.
+
+## Production Tradeoffs
+
+- Private EKS worker nodes improve security but require NAT or VPC endpoints for outbound dependencies.
+- NAT Gateway is operationally simple but can be expensive.
+- Managed node groups reduce operational burden compared with self-managed nodes.
+- OIDC avoids long-lived AWS credentials but requires correct trust policy setup.
+- RDS is easier to operate than self-managed PostgreSQL but still requires backup, upgrade, and connection management decisions.
+- Cognito reduces custom auth burden but requires careful callback URL, token, and app-client configuration.
+- GitHub OIDC avoids long-lived AWS keys, but role trust policies must tightly restrict allowed repos and branches/environments.
+- The dev apply role is broad for bootstrap convenience; production should replace it with least-privilege permissions.
+- EKS Blueprints Addons accelerates cluster bootstrap, but it introduces Helm/Kubernetes provider dependencies and usually works best as a second step after the EKS cluster exists.
+
+## Common Failure Modes
+
+- Terraform state stored locally or lost.
+- Concurrent applies without locking.
+- Worker nodes placed in public subnets.
+- IAM roles too broad.
+- GitHub Actions using static AWS keys.
+- EKS cluster created without a clear destroy plan.
+- Database exposed publicly.
+- Database password committed to Git instead of supplied as a secret.
+- Cognito callback URLs misconfigured across local, dev, and prod.
+- GitHub OIDC trust policy too broad, allowing untrusted repos or branches to assume AWS roles.
+- CI workflows using static AWS keys instead of OIDC.
+- Trying to install EKS add-ons before Kubernetes/Helm providers can authenticate to the cluster.
+
+## Interview Questions
+
+1. Why use remote state?
+2. Why use state locking?
+3. Why private subnets for worker nodes?
+4. What does the EKS control plane manage?
+5. What belongs in IAM vs Kubernetes RBAC?
+6. Why use GitHub OIDC?
+7. Why put PostgreSQL in private subnets?
+8. Why use Cognito instead of building custom authentication?
+9. How does the RDS security group allow EKS traffic?
+10. Why should the Terraform apply role be protected?
+11. What role does EKS Blueprints Addons play?
+12. Why apply base infrastructure before Kubernetes add-ons?
+
+## 60-Second Explanation
+
+This repo owns AWS infrastructure. Terraform provisions the VPC, networking, ECR, EKS, PostgreSQL, Cognito, security groups, IAM roles, and supporting resources. State should live remotely in S3 with DynamoDB locking so the team can collaborate safely. EKS worker nodes and RDS PostgreSQL run in private subnets, while public subnets support load balancers and NAT. PostgreSQL allows port 5432 from the EKS cluster security group. Cognito provides managed authentication through a User Pool and web app client. GitHub Actions assumes Terraform roles through OIDC, so we avoid static AWS keys and keep apply behind protected approval.
+
+For EKS platform add-ons, I can use EKS Blueprints Addons after the base cluster exists. That installs common operational components like AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets, ExternalDNS, and cert-manager using AWS-supported Terraform patterns.
+
+## Resume Bullet
+
+Built a Terraform-managed AWS platform foundation with VPC, private EKS worker nodes, ECR, RDS PostgreSQL, Cognito, security groups, GitHub OIDC IAM roles, remote state planning, and protected infrastructure workflows.
+
+Optional enhanced bullet:
+
+Designed an EKS platform bootstrap path using EKS Blueprints Addons for AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets, ExternalDNS, and cert-manager.

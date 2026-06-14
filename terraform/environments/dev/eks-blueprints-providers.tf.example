@@ -1,0 +1,30 @@
+# Provider configuration example for EKS Blueprints Addons.
+#
+# Rename this file to .tf only after the EKS cluster exists. Terraform may need
+# a two-step workflow:
+#
+# 1. Apply base AWS infrastructure: VPC, EKS, ECR, RDS, Cognito, IAM.
+# 2. Configure Kubernetes/Helm providers and apply EKS Blueprints Addons.
+
+data "aws_eks_cluster" "this" {
+  name = module.eks.cluster_name
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.this.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.this.token
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.this.token
+  }
+}
+

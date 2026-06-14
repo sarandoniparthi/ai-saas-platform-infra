@@ -1,0 +1,60 @@
+<mxfile host="Electron" modified="2026-06-13T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="interview-flow" name="Interview Simplified Flow">
+    <mxGraphModel dx="1400" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Simplified Interview Flow" style="text;html=1;strokeColor=none;fillColor=none;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="50" y="35" width="360" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="users" value="Users" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232f3e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="110" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="alb" value="AWS ALB&lt;br&gt;Public entry point" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="170" width="150" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="ingress" value="Kubernetes Ingress&lt;br&gt;HTTP routing rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f2ff;strokeColor=#147eba;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="170" width="170" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="service" value="Kubernetes Service&lt;br&gt;Stable internal endpoint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f5e9;strokeColor=#1f8a3b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="170" width="180" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="pods" value="Application Pods&lt;br&gt;on EKS private nodes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f2f2f2;strokeColor=#7d8998;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="910" y="170" width="180" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="rds" value="Amazon RDS PostgreSQL&lt;br&gt;private database subnet group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="105" width="200" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="cognito" value="Amazon Cognito&lt;br&gt;managed authentication" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="245" width="200" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="ci" value="GitHub Actions&lt;br&gt;OIDC to AWS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232f3e;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="430" width="160" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ecr" value="Amazon ECR&lt;br&gt;container images" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="430" width="160" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="gitops" value="GitOps Repo&lt;br&gt;Helm image tag" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f5e9;strokeColor=#1f8a3b;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="710" y="430" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="argo" value="ArgoCD&lt;br&gt;reconciles EKS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="960" y="430" width="160" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend" value="AWS-style legend: Orange = AWS service | Blue = public routing | Green = internal/GitOps flow | Gray = Kubernetes workload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7d8998;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="60" y="590" width="900" height="44" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeColor=#147eba;" edge="1" parent="1" source="users" target="alb"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeColor=#147eba;" edge="1" parent="1" source="alb" target="ingress"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="ingress" target="service"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="service" target="pods"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" value="5432" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="pods" target="rds"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" value="auth/tokens" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="1" source="pods" target="cognito"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="1" source="ci" target="ecr"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="ci" target="gitops"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="gitops" target="argo"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="1" source="argo" target="pods"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="1" source="ecr" target="pods"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

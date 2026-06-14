@@ -1,0 +1,73 @@
+<mxfile host="Electron" modified="2026-06-13T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="terraform-modules" name="Terraform Module Relationship">
+    <mxGraphModel dx="1500" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="title" value="Terraform Dev Environment - Module Composition" style="text;html=1;strokeColor=none;fillColor=none;fontSize=22;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="50" y="35" width="580" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="dev" value="terraform/environments/dev&lt;br&gt;Composition layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232f3e;fontStyle=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="610" y="90" width="280" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="awsbox" value="AWS resources created by modules" style="swimlane;html=1;rounded=1;startSize=30;horizontal=1;fillColor=#fffdf7;strokeColor=#ff9900;fontStyle=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="70" y="220" width="1360" height="520" as="geometry"/>
+        </mxCell>
+        <mxCell id="vpcmod" value="modules/vpc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f5e9;strokeColor=#1f8a3b;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="40" y="70" width="170" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="vpcres" value="VPC&lt;br&gt;Public/private subnets&lt;br&gt;IGW, NAT, route tables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e9f5e9;strokeColor=#1f8a3b;" vertex="1" parent="awsbox">
+          <mxGeometry x="40" y="170" width="200" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="ecrmod" value="modules/ecr" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="280" y="70" width="170" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="ecrres" value="Amazon ECR&lt;br&gt;backend-api&lt;br&gt;frontend&lt;br&gt;python-ai-api&lt;br&gt;worker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;" vertex="1" parent="awsbox">
+          <mxGeometry x="280" y="170" width="200" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="eksmod" value="modules/eks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="520" y="70" width="170" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="eksres" value="Amazon EKS&lt;br&gt;Control plane&lt;br&gt;Managed node group&lt;br&gt;Cluster/node IAM roles&lt;br&gt;Cluster security group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;" vertex="1" parent="awsbox">
+          <mxGeometry x="520" y="170" width="220" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="rdsmod" value="modules/rds-postgres" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="780" y="70" width="190" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="rdsres" value="Amazon RDS PostgreSQL&lt;br&gt;DB subnet group&lt;br&gt;DB security group&lt;br&gt;private + encrypted" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;" vertex="1" parent="awsbox">
+          <mxGeometry x="780" y="170" width="220" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cogmod" value="modules/cognito" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="1040" y="70" width="170" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="cogres" value="Amazon Cognito&lt;br&gt;User Pool&lt;br&gt;Web app client&lt;br&gt;Hosted UI domain" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;" vertex="1" parent="awsbox">
+          <mxGeometry x="1040" y="170" width="210" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="iammod" value="modules/iam-github-oidc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;fontStyle=1;" vertex="1" parent="awsbox">
+          <mxGeometry x="520" y="350" width="210" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="iamres" value="IAM&lt;br&gt;GitHub OIDC provider&lt;br&gt;Terraform plan role&lt;br&gt;Terraform apply role" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ff9900;" vertex="1" parent="awsbox">
+          <mxGeometry x="780" y="325" width="230" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="note" value="Key dependency: RDS allows PostgreSQL 5432 from the EKS cluster security group. EKS nodes are placed in private subnets from the VPC module." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#7d8998;align=left;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="140" y="790" width="1000" height="54" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="vpcmod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="ecrmod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="eksmod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="rdsmod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e5" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="cogmod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" style="endArrow=block;html=1;strokeColor=#232f3e;" edge="1" parent="1" source="dev" target="iammod"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="awsbox" source="vpcmod" target="vpcres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="awsbox" source="ecrmod" target="ecrres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="awsbox" source="eksmod" target="eksres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e10" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="awsbox" source="rdsmod" target="rdsres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e11" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="awsbox" source="cogmod" target="cogres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" style="endArrow=block;html=1;strokeColor=#ff9900;" edge="1" parent="awsbox" source="iammod" target="iamres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" value="private subnet ids" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="awsbox" source="vpcres" target="eksres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" value="private subnet ids" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="awsbox" source="vpcres" target="rdsres"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" value="EKS SG -> RDS SG" style="endArrow=block;html=1;strokeColor=#1f8a3b;" edge="1" parent="awsbox" source="eksres" target="rdsres"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
