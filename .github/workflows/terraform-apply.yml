@@ -13,7 +13,6 @@ jobs:
     environment: dev
     env:
       AWS_REGION: us-east-1
-      TF_VAR_database_password: ${{ secrets.DATABASE_PASSWORD }}
     defaults:
       run:
         working-directory: terraform/environments/dev

@@ -29,12 +29,6 @@ variable "database_username" {
   default = "app_admin"
 }
 
-variable "database_password" {
-  description = "Initial PostgreSQL password. Use a secret value from tfvars or CI secret storage."
-  type        = string
-  sensitive   = true
-}
-
 variable "instance_class" {
   type    = string
   default = "db.t4g.micro"

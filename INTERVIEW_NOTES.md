@@ -10,7 +10,7 @@ The infrastructure layer creates stable cloud primitives before application depl
 
 ## How It Works
 
-Terraform modules define reusable infrastructure. The bootstrap layer owns S3 remote state, DynamoDB locking, the GitHub OIDC provider, and Terraform plan/apply IAM roles. Environments such as dev and prod compose platform modules with environment-specific values. GitHub Actions runs format, validation, plan, and protected apply workflows by assuming IAM roles through OIDC. PostgreSQL is placed in private subnets and only allows traffic on port 5432 from the EKS cluster security group in the dev scaffold. Cognito provides managed authentication through a User Pool and app client.
+Terraform modules define reusable infrastructure. The bootstrap layer owns S3 remote state, DynamoDB locking, the GitHub OIDC provider, and Terraform plan/apply IAM roles. Environments such as dev and prod compose platform modules with environment-specific values. GitHub Actions runs format, validation, plan, and protected apply workflows by assuming IAM roles through OIDC. PostgreSQL is placed in private subnets, only allows traffic on port 5432 from the EKS cluster security group in the dev scaffold, and uses AWS-managed master credentials in Secrets Manager. Cognito provides managed authentication through a User Pool and app client.
 
 EKS Blueprints Addons can be used after the base cluster exists to install standard EKS platform add-ons such as AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets, ExternalDNS, and cert-manager.
 
@@ -37,7 +37,7 @@ EKS Blueprints Addons can be used after the base cluster exists to install stand
 - GitHub Actions using static AWS keys.
 - EKS cluster created without a clear destroy plan.
 - Database exposed publicly.
-- Database password committed to Git instead of supplied as a secret.
+- Database password committed to Git or stored as a static CI secret instead of managed in AWS Secrets Manager.
 - Cognito callback URLs misconfigured across local, dev, and prod.
 - GitHub OIDC trust policy too broad, allowing untrusted repos or branches to assume AWS roles.
 - CI workflows using static AWS keys instead of OIDC.

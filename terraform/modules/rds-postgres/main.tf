@@ -51,9 +51,9 @@ resource "aws_db_instance" "this" {
   max_allocated_storage = 100
   storage_encrypted     = true
 
-  db_name  = var.database_name
-  username = var.database_username
-  password = var.database_password
+  db_name                     = var.database_name
+  username                    = var.database_username
+  manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.this.name
   vpc_security_group_ids = [aws_security_group.this.id]

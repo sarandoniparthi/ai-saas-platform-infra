@@ -78,8 +78,9 @@ Add these GitHub Actions secrets using the Terraform outputs:
 ```text
 TERRAFORM_PLAN_ROLE_ARN
 TERRAFORM_APPLY_ROLE_ARN
-DATABASE_PASSWORD
 ```
+
+The RDS master password is not stored in GitHub. The dev RDS module uses AWS-managed master credentials in Secrets Manager.
 
 ## GitHub Environment
 

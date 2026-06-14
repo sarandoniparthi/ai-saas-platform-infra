@@ -58,3 +58,8 @@ output "postgres_security_group_id" {
   description = "RDS PostgreSQL security group ID."
   value       = module.postgres.security_group_id
 }
+
+output "postgres_master_user_secret_arn" {
+  description = "AWS Secrets Manager secret ARN for the RDS managed master user password."
+  value       = module.postgres.master_user_secret_arn
+}

@@ -75,7 +75,7 @@ Creates:
 - ECR repositories for application images.
 - EKS cluster and managed node group.
 - EKS OIDC provider for IRSA.
-- RDS PostgreSQL in private subnets.
+- RDS PostgreSQL in private subnets with AWS-managed master credentials in Secrets Manager.
 - Cognito User Pool and app client.
 - Security groups and IAM roles required by the platform.
 
@@ -317,7 +317,7 @@ $env:AWS_PROFILE="ai-saas-dev"
 terraform init -reconfigure
 terraform fmt -recursive ..\..
 terraform validate
-terraform plan -var="database_password=StrongTempPassword123!"
+terraform plan
 ```
 
 Expected after the platform is destroyed:
@@ -329,7 +329,7 @@ Plan: 43 to add, 0 to change, 0 to destroy.
 Apply only when you want to create paid AWS resources:
 
 ```powershell
-terraform apply -var="database_password=StrongTempPassword123!"
+terraform apply
 ```
 
 Verify EKS after apply:
@@ -343,7 +343,7 @@ kubectl get pods -A
 Destroy when finished testing:
 
 ```powershell
-terraform destroy -var="database_password=StrongTempPassword123!"
+terraform destroy
 ```
 
 ## GitHub Actions Setup
@@ -361,7 +361,6 @@ GitHub repo -> Settings -> Secrets and variables -> Actions -> New repository se
 Add these secrets:
 
 ```text
-DATABASE_PASSWORD
 TERRAFORM_PLAN_ROLE_ARN
 TERRAFORM_APPLY_ROLE_ARN
 ```
@@ -376,9 +375,9 @@ terraform output terraform_apply_role_arn
 
 Why secrets are used:
 
-- `DATABASE_PASSWORD` is sensitive and should never be committed.
 - Role ARNs are configuration values used by GitHub Actions to assume AWS roles.
 - AWS access keys are not stored because authentication uses OIDC.
+- The RDS master password is not stored in GitHub. RDS manages it in AWS Secrets Manager.
 
 ### Step 2: Create GitHub Environment
 

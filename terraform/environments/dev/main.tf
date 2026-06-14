@@ -33,7 +33,6 @@ module "postgres" {
   allowed_security_group_ids = {
     eks_cluster = module.eks.cluster_security_group_id
   }
-  database_password   = var.database_password
   deletion_protection = var.postgres_deletion_protection
   skip_final_snapshot = var.postgres_skip_final_snapshot
 }

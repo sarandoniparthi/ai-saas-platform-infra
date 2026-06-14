@@ -40,12 +40,6 @@ variable "eks_cluster_version" {
   default     = "1.34"
 }
 
-variable "database_password" {
-  description = "Initial PostgreSQL password. Provide through tfvars or CI secrets."
-  type        = string
-  sensitive   = true
-}
-
 variable "postgres_deletion_protection" {
   description = "Whether deletion protection is enabled for dev PostgreSQL."
   type        = bool
