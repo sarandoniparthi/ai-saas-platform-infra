@@ -67,7 +67,7 @@ Terraform state maps code resources to real AWS resource IDs. Without state, Ter
 For this repo, the dev backend uses:
 
 ```text
-S3 bucket: sarandoniparthi-ai-saas-tfstate-dev-274214918810
+S3 bucket: dedicated dev Terraform state bucket
 State key: ai-saas-platform/dev/terraform.tfstate
 DynamoDB lock table: ai-saas-platform-dev-tf-locks
 ```
