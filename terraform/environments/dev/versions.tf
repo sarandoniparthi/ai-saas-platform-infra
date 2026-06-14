@@ -13,12 +13,11 @@ terraform {
     }
   }
 
-  # Configure after creating the bootstrap S3 bucket and DynamoDB table.
-  # backend "s3" {
-  #   bucket         = "REPLACE_WITH_TF_STATE_BUCKET"
-  #   key            = "ai-saas-platform/dev/terraform.tfstate"
-  #   region         = "us-east-1"
-  #   dynamodb_table = "REPLACE_WITH_TF_LOCK_TABLE"
-  #   encrypt        = true
-  # }
+  backend "s3" {
+    bucket         = "sarandoniparthi-ai-saas-tfstate-dev-274214918810"
+    key            = "ai-saas-platform/dev/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "ai-saas-platform-dev-tf-locks"
+    encrypt        = true
+  }
 }

@@ -33,10 +33,12 @@ flowchart TB
   Users["Users / Browser"] --> ALB["Future AWS Application Load Balancer<br/>created by Kubernetes Ingress"]
   GitHub["GitHub Actions"] --> IAM["IAM<br/>GitHub OIDC Provider<br/>Terraform Plan / Apply Roles"]
   GitHub --> TF["Terraform Dev Environment"]
+  TF --> State["S3 Remote State<br/>DynamoDB Locking"]
 
   subgraph Account["AWS Account - Dev"]
     subgraph Region["Region: us-east-1"]
       IAM
+      State
       Cognito["Amazon Cognito<br/>User Pool + App Client<br/>Managed Auth"]
       EKSCP["Amazon EKS<br/>Managed Control Plane"]
       ECR["Amazon ECR<br/>Container Images"]
@@ -177,6 +179,8 @@ Use this when the interviewer asks about zones or production layout:
 Included now:
 
 - Dev environment only.
+- S3 remote state backend configured for dev.
+- DynamoDB lock table configured for dev.
 - VPC.
 - Public subnets.
 - Private subnets.
@@ -196,8 +200,7 @@ Included now:
 Not included yet:
 
 - `prod` environment.
-- Terraform remote backend bootstrap resources.
-- GitHub OIDC IAM trust role.
+- Terraform-managed bootstrap module for the S3 state bucket and DynamoDB lock table.
 - AWS Load Balancer Controller.
 - ArgoCD installation.
 - Kubernetes workloads deployed through Terraform.

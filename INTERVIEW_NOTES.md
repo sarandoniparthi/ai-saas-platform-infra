@@ -30,6 +30,8 @@ EKS Blueprints Addons can be used after the base cluster exists to install stand
 
 - Terraform state stored locally or lost.
 - Concurrent applies without locking.
+- Running GitHub Actions apply before remote state is configured.
+- Saying no to state migration while real AWS resources still exist.
 - Worker nodes placed in public subnets.
 - IAM roles too broad.
 - GitHub Actions using static AWS keys.
@@ -45,16 +47,36 @@ EKS Blueprints Addons can be used after the base cluster exists to install stand
 
 1. Why use remote state?
 2. Why use state locking?
-3. Why private subnets for worker nodes?
-4. What does the EKS control plane manage?
-5. What belongs in IAM vs Kubernetes RBAC?
-6. Why use GitHub OIDC?
-7. Why put PostgreSQL in private subnets?
-8. Why use Cognito instead of building custom authentication?
-9. How does the RDS security group allow EKS traffic?
-10. Why should the Terraform apply role be protected?
-11. What role does EKS Blueprints Addons play?
-12. Why apply base infrastructure before Kubernetes add-ons?
+3. What does `terraform init -reconfigure` do?
+4. When should you migrate local state to S3?
+5. Why private subnets for worker nodes?
+6. What does the EKS control plane manage?
+7. What belongs in IAM vs Kubernetes RBAC?
+8. Why use GitHub OIDC?
+9. Why put PostgreSQL in private subnets?
+10. Why use Cognito instead of building custom authentication?
+11. How does the RDS security group allow EKS traffic?
+12. Why should the Terraform apply role be protected?
+13. What role does EKS Blueprints Addons play?
+14. Why apply base infrastructure before Kubernetes add-ons?
+
+## Terraform State Explanation
+
+Terraform state maps code resources to real AWS resource IDs. Without state, Terraform cannot reliably know whether a VPC, EKS cluster, RDS instance, or IAM role already exists.
+
+For this repo, the dev backend uses:
+
+```text
+S3 bucket: sarandoniparthi-ai-saas-tfstate-dev-274214918810
+State key: ai-saas-platform/dev/terraform.tfstate
+DynamoDB lock table: ai-saas-platform-dev-tf-locks
+```
+
+`terraform init -reconfigure` is used when the backend configuration changes. In this project, it was used to move the dev environment from local state to an S3 backend. Reconfiguration does not create application infrastructure; it reconnects Terraform to the selected backend.
+
+Interview answer:
+
+> Terraform state is the source of truth that maps my configuration to real AWS resources. I use S3 for shared, durable, versioned state and DynamoDB for locking so two engineers or CI jobs cannot apply at the same time. When I moved from local state to S3, I used `terraform init -reconfigure` to force Terraform to initialize against the backend in `versions.tf`.
 
 ## 60-Second Explanation
 
@@ -64,7 +86,7 @@ For EKS platform add-ons, I can use EKS Blueprints Addons after the base cluster
 
 ## Resume Bullet
 
-Built a Terraform-managed AWS platform foundation with VPC, private EKS worker nodes, ECR, RDS PostgreSQL, Cognito, security groups, GitHub OIDC IAM roles, remote state planning, and protected infrastructure workflows.
+Built a Terraform-managed AWS platform foundation with S3/DynamoDB remote state, VPC, private EKS worker nodes, ECR, RDS PostgreSQL, Cognito, security groups, GitHub OIDC IAM roles, and protected infrastructure workflows.
 
 Optional enhanced bullet:
 
