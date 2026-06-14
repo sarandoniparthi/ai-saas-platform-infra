@@ -348,7 +348,17 @@ terraform destroy -var="database_password=StrongTempPassword123!"
 
 ## GitHub Actions Setup
 
-Add these repository secrets in GitHub:
+After bootstrap creates the Terraform plan/apply roles, connect GitHub Actions to AWS.
+
+### Step 1: Add Repository Secrets
+
+Go to:
+
+```text
+GitHub repo -> Settings -> Secrets and variables -> Actions -> New repository secret
+```
+
+Add these secrets:
 
 ```text
 DATABASE_PASSWORD
@@ -356,13 +366,76 @@ TERRAFORM_PLAN_ROLE_ARN
 TERRAFORM_APPLY_ROLE_ARN
 ```
 
-Workflow behavior:
+Where the role values come from:
 
-- Pull requests run Terraform format, init, validate, and plan.
-- Apply is manual through `workflow_dispatch`.
-- Apply should be protected with a GitHub environment such as `dev`.
+```powershell
+cd C:\code\learning\ai-saas-platform-infra\terraform\bootstrap
+terraform output terraform_plan_role_arn
+terraform output terraform_apply_role_arn
+```
+
+Why secrets are used:
+
+- `DATABASE_PASSWORD` is sensitive and should never be committed.
+- Role ARNs are configuration values used by GitHub Actions to assume AWS roles.
+- AWS access keys are not stored because authentication uses OIDC.
+
+### Step 2: Create GitHub Environment
+
+Go to:
+
+```text
+GitHub repo -> Settings -> Environments -> New environment
+```
+
+Create:
+
+```text
+dev
+```
+
+Add an environment protection rule:
+
+```text
+Required reviewers: yourself
+```
+
+Why this exists:
+
+> The `dev` environment protects `terraform apply`. Pull requests can run plan automatically, but apply is a higher-risk action because it can create, change, or destroy AWS resources. GitHub environment approval adds a manual gate and audit trail.
+
+This matches the apply workflow:
+
+```yaml
+environment: dev
+```
+
+### Step 3: Understand Workflow Behavior
+
+Plan workflow:
+
+```text
+Trigger: pull_request
+Role: TERRAFORM_PLAN_ROLE_ARN
+Actions: terraform fmt, init, validate, plan
+Purpose: review infrastructure changes before merge
+```
+
+Apply workflow:
+
+```text
+Trigger: workflow_dispatch
+Role: TERRAFORM_APPLY_ROLE_ARN
+Environment: dev
+Actions: terraform init, apply
+Purpose: manually approved infrastructure changes
+```
 
 Do not run apply from GitHub until the S3 backend is enabled and the role ARN secrets are configured.
+
+Interview explanation:
+
+> I use GitHub Actions with OIDC so CI does not need static AWS keys. Pull requests assume a read-oriented Terraform plan role and show the planned infrastructure changes. Applies are manual, use a separate apply role, and are protected by the GitHub `dev` environment so infrastructure changes require approval and leave an audit trail.
 
 ## What Not To Commit
 

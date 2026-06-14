@@ -41,6 +41,7 @@ EKS Blueprints Addons can be used after the base cluster exists to install stand
 - Cognito callback URLs misconfigured across local, dev, and prod.
 - GitHub OIDC trust policy too broad, allowing untrusted repos or branches to assume AWS roles.
 - CI workflows using static AWS keys instead of OIDC.
+- Terraform apply workflow not protected with a GitHub environment approval.
 - Trying to install EKS add-ons before Kubernetes/Helm providers can authenticate to the cluster.
 
 ## Interview Questions
@@ -59,6 +60,7 @@ EKS Blueprints Addons can be used after the base cluster exists to install stand
 12. Why should the Terraform apply role be protected?
 13. What role does EKS Blueprints Addons play?
 14. Why apply base infrastructure before Kubernetes add-ons?
+15. Why use GitHub Environments for Terraform apply?
 
 ## Terraform State Explanation
 
@@ -103,6 +105,22 @@ Cognito
 Interview answer:
 
 > I separated bootstrap from platform infrastructure. Bootstrap creates Terraform's operating foundation: state storage, locking, and CI identity. The dev environment then creates the actual AWS platform. This avoids circular dependencies where GitHub Actions needs IAM roles before it can safely run Terraform.
+
+## GitHub Actions Environment Explanation
+
+The plan workflow runs automatically on pull requests and uses the Terraform plan role. The apply workflow is manual and uses the Terraform apply role.
+
+The apply workflow is tied to a GitHub environment:
+
+```text
+dev
+```
+
+That environment should require reviewer approval.
+
+Interview answer:
+
+> I use GitHub Environments to protect Terraform apply. Pull requests can run plan automatically, but apply is connected to the `dev` environment and requires approval. This separates review from deployment, prevents accidental infrastructure changes, and creates an audit trail for who approved the change.
 
 ## 60-Second Explanation
 

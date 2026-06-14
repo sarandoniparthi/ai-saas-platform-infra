@@ -81,6 +81,30 @@ TERRAFORM_APPLY_ROLE_ARN
 DATABASE_PASSWORD
 ```
 
+## GitHub Environment
+
+Create a GitHub environment named:
+
+```text
+dev
+```
+
+Recommended protection:
+
+```text
+Required reviewers: yourself
+```
+
+The apply workflow references this environment:
+
+```yaml
+environment: dev
+```
+
+Why:
+
+> Terraform apply can create, modify, or destroy AWS resources. A GitHub environment adds manual approval and an audit trail before the apply job can run.
+
 ## Commit Rules
 
 Commit:
