@@ -69,15 +69,3 @@ variable "cognito_logout_urls" {
   type        = list(string)
   default     = ["http://localhost:3000"]
 }
-
-variable "github_owner" {
-  description = "GitHub organization or username that owns the platform repos."
-  type        = string
-  default     = "YOUR_GITHUB_OWNER"
-}
-
-variable "github_infra_repo" {
-  description = "GitHub repository name for infrastructure."
-  type        = string
-  default     = "ai-saas-platform-infra"
-}

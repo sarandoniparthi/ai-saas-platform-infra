@@ -25,6 +25,7 @@ This repo owns AWS infrastructure for the AI SaaS reference platform.
 
 ```text
 terraform/
+  bootstrap/
   environments/
     dev/
     prod/
@@ -193,6 +194,58 @@ terraform/environments/dev/.terraform.lock.hcl
 ```
 
 It locks provider versions and makes Terraform runs more repeatable.
+
+## Bootstrap Runbook
+
+Bootstrap owns the infrastructure Terraform and GitHub Actions need before the dev platform can be managed from CI.
+
+Bootstrap creates:
+
+- S3 bucket for Terraform remote state.
+- DynamoDB table for Terraform state locking.
+- GitHub Actions OIDC provider.
+- Terraform plan IAM role.
+- Terraform apply IAM role.
+
+Run from:
+
+```powershell
+cd C:\code\learning\ai-saas-platform-infra\terraform\bootstrap
+$env:AWS_PROFILE="ai-saas-dev"
+```
+
+Bootstrap starts with local state because it creates the S3 bucket and DynamoDB lock table used by remote backends.
+
+If the S3 bucket and DynamoDB table were created manually first, either import them into bootstrap state or delete them and let bootstrap create them cleanly.
+
+For a clean bootstrap run:
+
+```powershell
+terraform init
+terraform plan
+terraform apply
+```
+
+After bootstrap creates the bucket and lock table, migrate bootstrap state to S3:
+
+```powershell
+Copy-Item backend-s3.tf.example backend.tf
+terraform init -migrate-state
+terraform state list
+terraform plan
+terraform output terraform_plan_role_arn
+terraform output terraform_apply_role_arn
+```
+
+After migration, commit `terraform/bootstrap/backend.tf` and `terraform/bootstrap/.terraform.lock.hcl`. Do not commit `.terraform/`, `terraform.tfstate`, or `terraform.tfstate.backup`.
+
+Add the role ARN outputs to GitHub Actions secrets:
+
+```text
+TERRAFORM_PLAN_ROLE_ARN
+TERRAFORM_APPLY_ROLE_ARN
+DATABASE_PASSWORD
+```
 
 ## Explain This In Interviews
 

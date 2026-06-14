@@ -2,7 +2,7 @@
 
 ## What I Built
 
-AWS infrastructure foundation for a production-style AI SaaS platform using Terraform, including networking, Kubernetes, container registry, PostgreSQL, Cognito authentication, security groups, and IAM/OIDC roles.
+AWS infrastructure foundation for a production-style AI SaaS platform using Terraform, including a bootstrap layer for remote state and CI identity, plus a dev platform layer for networking, Kubernetes, container registry, PostgreSQL, Cognito authentication, and security groups.
 
 ## Why It Exists
 
@@ -10,7 +10,7 @@ The infrastructure layer creates stable cloud primitives before application depl
 
 ## How It Works
 
-Terraform modules define reusable infrastructure. Environments such as dev and prod compose those modules with environment-specific values. Remote state stores Terraform state in S3, and DynamoDB locking prevents concurrent applies. GitHub Actions runs format, validation, plan, and protected apply workflows by assuming IAM roles through OIDC. PostgreSQL is placed in private subnets and only allows traffic on port 5432 from the EKS cluster security group in the dev scaffold. Cognito provides managed authentication through a User Pool and app client.
+Terraform modules define reusable infrastructure. The bootstrap layer owns S3 remote state, DynamoDB locking, the GitHub OIDC provider, and Terraform plan/apply IAM roles. Environments such as dev and prod compose platform modules with environment-specific values. GitHub Actions runs format, validation, plan, and protected apply workflows by assuming IAM roles through OIDC. PostgreSQL is placed in private subnets and only allows traffic on port 5432 from the EKS cluster security group in the dev scaffold. Cognito provides managed authentication through a User Pool and app client.
 
 EKS Blueprints Addons can be used after the base cluster exists to install standard EKS platform add-ons such as AWS Load Balancer Controller, EBS CSI, metrics-server, External Secrets, ExternalDNS, and cert-manager.
 
@@ -77,6 +77,32 @@ DynamoDB lock table: ai-saas-platform-dev-tf-locks
 Interview answer:
 
 > Terraform state is the source of truth that maps my configuration to real AWS resources. I use S3 for shared, durable, versioned state and DynamoDB for locking so two engineers or CI jobs cannot apply at the same time. When I moved from local state to S3, I used `terraform init -reconfigure` to force Terraform to initialize against the backend in `versions.tf`.
+
+## Bootstrap Explanation
+
+Bootstrap owns the foundation Terraform needs to run safely:
+
+```text
+S3 remote state
+DynamoDB locking
+GitHub OIDC provider
+Terraform plan role
+Terraform apply role
+```
+
+The dev environment owns the application platform:
+
+```text
+VPC
+EKS
+ECR
+RDS PostgreSQL
+Cognito
+```
+
+Interview answer:
+
+> I separated bootstrap from platform infrastructure. Bootstrap creates Terraform's operating foundation: state storage, locking, and CI identity. The dev environment then creates the actual AWS platform. This avoids circular dependencies where GitHub Actions needs IAM roles before it can safely run Terraform.
 
 ## 60-Second Explanation
 

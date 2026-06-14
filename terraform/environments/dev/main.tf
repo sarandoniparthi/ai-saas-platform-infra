@@ -46,13 +46,3 @@ module "cognito" {
   callback_urls = var.cognito_callback_urls
   logout_urls   = var.cognito_logout_urls
 }
-
-module "github_oidc" {
-  source = "../../modules/iam-github-oidc"
-
-  project_name = var.project_name
-  environment  = var.environment
-  github_subjects = [
-    "repo:${var.github_owner}/${var.github_infra_repo}:*"
-  ]
-}

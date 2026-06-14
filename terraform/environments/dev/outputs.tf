@@ -58,18 +58,3 @@ output "postgres_security_group_id" {
   description = "RDS PostgreSQL security group ID."
   value       = module.postgres.security_group_id
 }
-
-output "github_oidc_provider_arn" {
-  description = "GitHub Actions OIDC provider ARN."
-  value       = module.github_oidc.github_oidc_provider_arn
-}
-
-output "terraform_plan_role_arn" {
-  description = "GitHub Actions role ARN for Terraform plan."
-  value       = module.github_oidc.terraform_plan_role_arn
-}
-
-output "terraform_apply_role_arn" {
-  description = "GitHub Actions role ARN for protected Terraform apply."
-  value       = module.github_oidc.terraform_apply_role_arn
-}

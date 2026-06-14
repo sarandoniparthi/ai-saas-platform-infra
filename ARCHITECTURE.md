@@ -19,6 +19,21 @@ terraform/modules/cognito
 terraform/modules/iam-github-oidc
 ```
 
+Bootstrap layer:
+
+```text
+terraform/bootstrap
+```
+
+Bootstrap owns:
+
+```text
+S3 remote state bucket
+DynamoDB state lock table
+GitHub Actions OIDC provider
+Terraform plan/apply IAM roles
+```
+
 Optional EKS Blueprints Addons examples:
 
 ```text
@@ -34,6 +49,8 @@ flowchart TB
   GitHub["GitHub Actions"] --> IAM["IAM<br/>GitHub OIDC Provider<br/>Terraform Plan / Apply Roles"]
   GitHub --> TF["Terraform Dev Environment"]
   TF --> State["S3 Remote State<br/>DynamoDB Locking"]
+  Bootstrap["Terraform Bootstrap"] --> State
+  Bootstrap --> IAM
 
   subgraph Account["AWS Account - Dev"]
     subgraph Region["Region: us-east-1"]
@@ -115,13 +132,15 @@ flowchart LR
 ```mermaid
 flowchart TB
   Dev["terraform/environments/dev<br/>composition layer"]
+  BootstrapMod["terraform/bootstrap<br/>Terraform operating foundation"]
 
   Dev --> VPCMod["modules/vpc"]
   Dev --> ECRMod["modules/ecr"]
   Dev --> EKSMod["modules/eks"]
   Dev --> RDSMod["modules/rds-postgres"]
   Dev --> CognitoMod["modules/cognito"]
-  Dev --> IAMMod["modules/iam-github-oidc"]
+  BootstrapMod --> IAMMod["modules/iam-github-oidc"]
+  BootstrapMod --> StateMod["S3 state bucket<br/>DynamoDB lock table"]
 
   VPCMod --> VPC["VPC<br/>public/private subnets<br/>IGW, NAT, route tables"]
   ECRMod --> ECR["ECR repositories<br/>backend-api, frontend<br/>python-ai-api, worker"]
@@ -192,15 +211,14 @@ Included now:
 - EKS managed node group.
 - IAM roles for EKS and nodes.
 - EKS OIDC provider for IRSA.
-- GitHub Actions OIDC provider.
-- Terraform plan/apply IAM roles.
+- GitHub Actions OIDC provider in bootstrap.
+- Terraform plan/apply IAM roles in bootstrap.
 - RDS PostgreSQL in private subnets.
 - Cognito User Pool and app client.
 
 Not included yet:
 
 - `prod` environment.
-- Terraform-managed bootstrap module for the S3 state bucket and DynamoDB lock table.
 - AWS Load Balancer Controller.
 - ArgoCD installation.
 - Kubernetes workloads deployed through Terraform.
